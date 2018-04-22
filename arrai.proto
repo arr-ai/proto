@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package proto;
+
+service Arrai {
+     rpc Update (stream UpdateReq) returns (stream UpdateAck) { }
+     rpc Observe (ObserveReq) returns (stream ObserveResp) { }
+}
+
+message UpdateReq {
+    string expr = 1;
+    Value param = 2;
+}
+
+message UpdateAck { }
+
+message ObserveReq {
+    string expr = 1;
+    Value param = 2;
+}
+
+message ObserveResp {
+    Value value = 3;
+}
+
+//-------------------------------------------------------------
+// Type system
+
+message Value {
+    oneof choice {
+        Number number = 1;
+        Tuple tuple = 2;
+        Set set = 3;
+        string json = 4;
+    }
+}
+
+message Number {
+    oneof repr {
+        double n = 1;
+    }
+}
+
+message Tuple {
+    map<string, Value> attrs = 1;
+}
+
+message Set {
+    oneof repr {
+        Values values = 1;
+        bool bool = 2;
+        Values array = 3;
+        string string = 4;
+    }
+
+    message Values {
+        repeated Value value = 1;
+    }
+}
